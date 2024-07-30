@@ -22,4 +22,8 @@ export class UserService {
     delete newUser.password;
     return newUser;
   }
+
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
 }
