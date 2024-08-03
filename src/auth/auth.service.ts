@@ -16,14 +16,16 @@ export class AuthService {
     const payload = { username: user.email, sub: { name: user.name } };
     return {
       user,
-      backendToken: await this.jwt.signAsync(payload, {
-        expiresIn: '1h',
-        secret: process.env.jwtSecretKey,
-      }),
-      RefreshToken: await this.jwt.signAsync(payload, {
-        expiresIn: '1d',
-        secret: process.env.jwtSecretKey,
-      }),
+      backendTokens: {
+        accessToken: await this.jwt.signAsync(payload, {
+          expiresIn: '1h',
+          secret: process.env.jwtSecretKey,
+        }),
+        refreshToken: await this.jwt.signAsync(payload, {
+          expiresIn: '1d',
+          secret: process.env.jwtSecretKey,
+        }),
+      },
     };
   }
 
@@ -34,5 +36,19 @@ export class AuthService {
       return user;
     }
     throw new UnauthorizedException();
+  }
+
+  async refreshToken(user: any) {
+    const payload = { username: user.user, sub: user.sub };
+    return {
+      accessToken: await this.jwt.signAsync(payload, {
+        expiresIn: '1h',
+        secret: process.env.jwtSecretKey,
+      }),
+      refreshToken: await this.jwt.signAsync(payload, {
+        expiresIn: '1d',
+        secret: process.env.jwtSecretKey,
+      }),
+    };
   }
 }
